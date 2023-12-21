@@ -1,9 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:tempat_wisata/components/slider_image.dart';
+import 'package:tempat_wisata/model/tourism_place.dart';
 
 class DetailScreen extends StatefulWidget {
-  const DetailScreen({Key? key}) : super(key: key);
+  final TourismPlace place;
+
+  const DetailScreen({Key? key, required this.place}) : super(key: key);
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
@@ -37,8 +41,8 @@ class _DetailScreenState extends State<DetailScreen> {
                     : Stack(
                         children: <Widget>[
                           Container(
-                            child: Image.network(
-                              "https://source.unsplash.com/random/1280x720/?nature",
+                            child: Image.asset(
+                              widget.place.imageAsset,
                               // fit: BoxFit.contain
                             ),
                           ),
@@ -49,6 +53,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
+                                  // back button icon
                                   InkWell(
                                     child: Container(
                                       padding: const EdgeInsets.all(10),
@@ -65,6 +70,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                       Navigator.pop(context);
                                     },
                                   ),
+                                  // mark favorite button
                                   Padding(
                                     padding: const EdgeInsets.all(0),
                                     child: IconButton(
@@ -113,11 +119,9 @@ class _DetailScreenState extends State<DetailScreen> {
                   child: Column(
                     children: <Widget>[
                       // heading
-                      Text(constraints.maxWidth.toString()),
-                      Text(constraints.maxHeight.toString()),
-                      const Text(
-                        "Great Lake of Toba",
-                        style: TextStyle(
+                      Text(
+                        widget.place.name,
+                        style: const TextStyle(
                           fontSize: 32,
                         ),
                       ),
@@ -125,28 +129,28 @@ class _DetailScreenState extends State<DetailScreen> {
                         height: 16,
                       ),
                       // information
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Column(
                             children: [
-                              Icon(Icons.date_range_outlined),
-                              SizedBox(height: 6),
-                              Text("Open Everyday"),
+                              const Icon(Icons.date_range_outlined),
+                              const SizedBox(height: 6),
+                              Text(widget.place.openDays),
                             ],
                           ),
                           Column(
                             children: [
-                              Icon(Icons.watch_later_outlined),
-                              SizedBox(height: 6),
-                              Text("09.00 - 20.00"),
+                              const Icon(Icons.watch_later_outlined),
+                              const SizedBox(height: 6),
+                              Text(widget.place.openTime),
                             ],
                           ),
                           Column(
                             children: [
-                              Icon(Icons.attach_money_outlined),
-                              SizedBox(height: 6),
-                              Text("Rp 25.000"),
+                              const Icon(Icons.attach_money_outlined),
+                              const SizedBox(height: 6),
+                              Text(widget.place.ticketPrice),
                             ],
                           ),
                         ],
@@ -155,15 +159,17 @@ class _DetailScreenState extends State<DetailScreen> {
                         height: 18,
                       ),
                       // description
-                      const Text(
-                        "Aliquip duis voluptate incididunt esse est anim aliquip. Cillum ut do aliqua aliquip minim ex Lorem adipisicing qui excepteur excepteur ex qui. Amet dolor dolore ut consequat magna cupidatat ut tempor. Excepteur est eu occaecat consectetur nulla. Incididunt voluptate magna aliqua sit mollit.",
+                      Text(
+                        widget.place.description,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(
                         height: 18,
                       ),
                       // image slider
-                      isLarge ? Container() : const SliderImage(),
+                      isLarge
+                          ? Container()
+                          : SliderImage(images: widget.place.imageUrls),
                     ],
                   ),
                 ),
@@ -173,63 +179,5 @@ class _DetailScreenState extends State<DetailScreen> {
         },
       ),
     );
-  }
-}
-
-class SliderImage extends StatefulWidget {
-  const SliderImage({Key? key}) : super(key: key);
-
-  @override
-  SliderImageState createState() => SliderImageState();
-}
-
-class SliderImageState extends State<SliderImage> {
-  final scrollController = ScrollController();
-
-  final List<String> images = [
-    "https://source.unsplash.com/random/1280x720/?nature",
-    "https://source.unsplash.com/random/1280x720/?nature",
-    "https://source.unsplash.com/random/1280x720/?nature",
-    "https://source.unsplash.com/random/1280x720/?nature",
-    "https://source.unsplash.com/random/1280x720/?nature",
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: Scrollbar(
-        thumbVisibility: true,
-        trackVisibility: true,
-        controller: scrollController,
-        child: ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          }),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 18),
-            child: ListView.builder(
-              controller: scrollController,
-              itemBuilder: (context, index) {
-                final String imgURLs = images[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Image.network(imgURLs),
-                );
-              },
-              itemCount: images.length,
-              scrollDirection: Axis.horizontal,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
   }
 }
